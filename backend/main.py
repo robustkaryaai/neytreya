@@ -651,19 +651,62 @@ async def recall_quick(q: str = ""):
 
 @app.get("/report/monthly")
 async def report_monthly():
-    """Aggregated stats for the monthly PDF report."""
-    # In a real scenario, this would aggregate data over the last 30 days
-    # using self.db.get_timeline_for_date, etc. For now, we mock some stats.
+    """Aggregated stats for the monthly PDF report — uses real recall DB data."""
+    from datetime import datetime, timedelta
+    from collections import defaultdict
+
+    today = datetime.now().date()
+    app_totals: dict[str, float] = defaultdict(float)   # app name → hours
+    stuck_total = 0
+    days_active = 0
+
+    # Walk back 30 days and collect timeline entries
+    for offset in range(30):
+        day = today - timedelta(days=offset)
+        try:
+            day_data = await recall_engine.get_timeline_for_date(str(day))
+            entries = day_data.get("timeline", []) if day_data else []
+        except Exception:
+            entries = []
+
+        if entries:
+            days_active += 1
+            # Each entry represents time spent — count distinct transitions
+            prev_time = None
+            for i, entry in enumerate(entries):
+                app_name = entry.get("app") or "Unknown"
+                # Estimate duration as gap to next entry (assume 2-min intervals)
+                duration_h = 2 / 60.0
+                app_totals[app_name] += duration_h
+                if entry.get("stuck"):
+                    stuck_total += 1
+
+    # Build sorted app usage list
+    sorted_apps = sorted(app_totals.items(), key=lambda x: x[1], reverse=True)
+    app_usage = [{"name": name, "hours": round(hours, 1)} for name, hours in sorted_apps[:8]]
+    total_hours = sum(app_totals.values())
+    top_app = sorted_apps[0][0] if sorted_apps else "your apps"
+
+    # Simple insight
+    if total_hours > 0:
+        top_pct = round((sorted_apps[0][1] / total_hours) * 100) if sorted_apps else 0
+        insight = (
+            f"Over the past 30 days Neytreya recorded {round(total_hours, 1)} hours of activity "
+            f"across {days_active} active days. "
+            f"Most of your time ({top_pct}%) was spent in {top_app}. "
+            + (f"You hit {stuck_total} stuck events — moments where you were on the same screen for a while." if stuck_total else "No stuck events recorded.")
+        )
+    else:
+        insight = "Not enough data yet — let Neytreya run for a few days to generate meaningful insights."
+
     return {
-        "focus_time": "142h 30m",
-        "app_usage": [
-            {"name": "VS Code", "hours": 45},
-            {"name": "Chrome", "hours": 30},
-            {"name": "Terminal", "hours": 15},
-        ],
-        "top_websites": ["github.com", "stackoverflow.com", "docs.python.org"],
-        "stuck_events": 12,
-        "insights": "You spent 15% more time coding this month compared to last month. Your most productive time is 10:00 AM to 1:00 PM."
+        "focus_time": f"{int(total_hours)}h {int((total_hours % 1) * 60)}m" if total_hours else "No data yet",
+        "app_usage": app_usage,
+        "top_websites": [],   # future: parse window titles for browser entries
+        "stuck_events": stuck_total,
+        "insights": insight,
+        "days_active": days_active,
+        "generated_at": datetime.now().strftime("%B %d, %Y at %H:%M"),
     }
 
 @app.post("/tts/speak")

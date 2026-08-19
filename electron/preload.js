@@ -83,6 +83,9 @@ contextBridge.exposeInMainWorld('neytreya', {
   /** Fetch recall data from backend. type: 'recent'|'today'|'yesterday'|'search' */
   fetchRecall: (type, query) => ipcRenderer.invoke('fetch-recall', { type, query }),
 
+  /** Open a snapshot file in the system's default image viewer (Preview on macOS) */
+  openSnapshot: (filename) => ipcRenderer.invoke('open-snapshot', filename),
+
   // ── Quick Recall ──────────────────────────────────────────────────────────
   closeQuickRecall: () => ipcRenderer.invoke('close-quick-recall'),
   queryQuickRecall: (q) => ipcRenderer.invoke('fetch-recall', { type: 'quick', query: q }),

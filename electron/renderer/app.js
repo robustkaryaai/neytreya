@@ -318,14 +318,9 @@ async function fetchActiveTimeline() {
 }
 
 function showRecallOverlay(filename) {
-  const div = document.createElement('div');
-  div.className = 'recall-overlay';
-  div.innerHTML = `
-    <button class="recall-overlay-close" onclick="this.parentElement.remove()">\u00d7</button>
-    <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(filename)}">
-  `;
-  document.body.appendChild(div);
-  div.onclick = (e) => { if (e.target === div) div.remove(); };
+  if (window.neytreya && window.neytreya.openSnapshot) {
+    window.neytreya.openSnapshot(filename).catch(console.error);
+  }
 }
 
 function updateResources(state) {

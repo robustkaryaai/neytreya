@@ -51,7 +51,7 @@
       "entitlementsInherit": "build/entitlements.mac.inherit.plist"
     },
     "dmg": {
-      "background": "build/dmg_background.tiff",
+      "background": "renderer/dmg_bg.tiff",
       "window": {
         "width": 1280,
         "height": 800
@@ -73,7 +73,10 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "artifactName": "Neytreya-${version}-${arch}-Setup.exe"

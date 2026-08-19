@@ -40,6 +40,7 @@ class NeytreyadSettings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra    = "ignore"   # don't crash on Electron-only fields (is_logged_in, user_name, etc.)
 
     # ------------------------------------------------------------------
     # Persistence

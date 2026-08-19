@@ -819,6 +819,26 @@ ipcMain.handle('check-screen-permission', () => {
   return process.platform === 'darwin' ? systemPreferences.getMediaAccessStatus('screen') === 'granted' : true;
 });
 
+// ── Open snapshot in system image viewer (Preview on macOS) ─────────────────
+ipcMain.handle('open-snapshot', async (_event, filename) => {
+  try {
+    const os  = require('os');
+    const http = require('http');
+    const tmpPath = path.join(os.tmpdir(), `neytreya_snap_${Date.now()}.webp`);
+    await new Promise((resolve, reject) => {
+      const file = fs.createWriteStream(tmpPath);
+      http.get(`http://localhost:${BACKEND_PORT}/recall/snapshot/${encodeURIComponent(filename)}`, (res) => {
+        res.pipe(file);
+        file.on('finish', () => { file.close(); resolve(); });
+      }).on('error', reject);
+    });
+    await shell.openPath(tmpPath);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+});
+
 ipcMain.handle('request-screen-permission', async () => {
   if (process.platform !== 'darwin') return true;
   if (systemPreferences.getMediaAccessStatus('screen') === 'granted') return true;
