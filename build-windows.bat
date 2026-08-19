@@ -58,8 +58,8 @@ copy /Y dist\neytreya-backend.exe ..\electron\resources\backend\neytreya-backend
 cd ..\electron
 
 echo [BUILD] Installing Node deps...
-npm cache clean --force
-npm install --legacy-peer-deps --prefer-online
+call npm cache clean --force
+call npm install --legacy-peer-deps --prefer-online
 
 if errorlevel 1 (
     echo [ERROR] npm install failed!
@@ -70,9 +70,9 @@ if errorlevel 1 (
 REM ─── Build for the current machine's architecture ───
 echo [BUILD] Building Windows installer for %ARCH%...
 if "%ARCH%"=="arm64" (
-    npm run dist:win:arm64
+    call npm run dist:win:arm64
 ) else (
-    npm run dist:win:x64
+    call npm run dist:win:x64
 )
 
 echo.
