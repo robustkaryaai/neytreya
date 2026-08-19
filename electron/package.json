@@ -51,7 +51,7 @@
       "entitlementsInherit": "build/entitlements.mac.inherit.plist"
     },
     "dmg": {
-      "background": "renderer/dmg_bg.tiff",
+      "background": "renderer/dmg_bg.png",
       "window": {
         "width": 1280,
         "height": 800
