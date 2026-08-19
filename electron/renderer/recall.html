@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neytreya · Recall</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --em:        #10b981;
+      --em-bright: #34d399;
+      --em-dim:    #059669;
+      --em-glow:   rgba(16,185,129,0.22);
+      --em-surf:   rgba(16,185,129,0.07);
+      --em-bd:     rgba(16,185,129,0.18);
+      --blue:      #06b6d4;
+      --blue-glow: rgba(6,182,212,0.20);
+      --bg:        #060e09;
+      --bg-card:   rgba(255,255,255,0.028);
+      --bg-hover:  rgba(16,185,129,0.05);
+      --tx-1:      #ffffff;
+      --tx-2:      rgba(255,255,255,0.85);
+      --tx-3:      rgba(255,255,255,0.48);
+      --bd:        rgba(255,255,255,0.07);
+      --r:         12px;
+      --spring:    cubic-bezier(0.34,1.56,0.64,1);
+      --ease:      cubic-bezier(0.16,1,0.3,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx-1);
+      font-family: 'Inter', -apple-system, sans-serif;
+      height: 100vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Dot-grid ambient background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(16,185,129,0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── IC: Activity bars ──────────────────────── */
+    .ic-activity { display: flex; gap: 2px; align-items: flex-end; }
+    .ic-bar { width: 3px; border-radius: 1px; background: var(--em); }
+    .ic-bar:nth-child(1) { height: 5px; animation: bar-wave 1.4s ease-in-out 0.0s infinite; }
+    .ic-bar:nth-child(2) { height: 9px; animation: bar-wave 1.4s ease-in-out 0.2s infinite; }
+    .ic-bar:nth-child(3) { height: 6px; animation: bar-wave 1.4s ease-in-out 0.4s infinite; }
+    @keyframes bar-wave { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.5)} }
+
+    /* ── IC: Browser ────────────────────────────── */
+    .ic-browser {
+      width: 13px; height: 11px;
+      border: 2px solid var(--em); border-radius: 2px; position: relative;
+    }
+    .ic-browser::before {
+      content: ''; position: absolute;
+      top: 2px; left: 0; right: 0;
+      height: 1.5px; background: var(--em);
+    }
+
+    /* ── IC: Diamond (design) ───────────────────── */
+    .ic-diamond {
+      width: 10px; height: 10px;
+      background: var(--em);
+      transform: rotate(45deg);
+      border-radius: 1px;
+    }
+
+    /* ── IC: Terminal prompt ────────────────────── */
+    .ic-terminal {
+      width: 13px; height: 9px; position: relative;
+    }
+    .ic-terminal::before {
+      content: ''; position: absolute;
+      left: 0; top: 2px;
+      width: 0; height: 0;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-left: 5px solid var(--em);
+    }
+    .ic-terminal::after {
+      content: ''; position: absolute;
+      right: 0; bottom: 0;
+      width: 6px; height: 2px;
+      background: var(--em); border-radius: 1px;
+    }
+
+    /* ── IC: Pulse dot ──────────────────────────── */
+    .ic-pulse {
+      width: 8px; height: 8px;
+      border-radius: 50%; background: var(--em);
+      animation: pulse-ring 1.8s ease-out infinite;
+      box-shadow: 0 0 0 0 var(--em-glow);
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 var(--em-glow); }
+      70%  { box-shadow: 0 0 0 6px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+
+    /* ── Sidebar label ──────────────────────────── */
+    .sidebar-label {
+      font-size: 9px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--tx-3); padding: 0 10px 10px;
+    }
+
+    /* ── Mini tag pill ──────────────────────────── */
+    .mini-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10.5px; background: rgba(255,255,255,0.04);
+      padding: 2px 7px; border-radius: 4px;
+      margin-right: 5px; margin-top: 5px; color: var(--tx-3);
+    }
+    .mini-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--em); }
+    .logo-img {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      object-fit: cover;
+      box-shadow: 0 0 10px var(--blue-glow);
+      flex-shrink: 0;
+      animation: logo-breathe 3s ease-in-out infinite;
+    }
+    @keyframes logo-breathe {
+      0%,100% { box-shadow: 0 0 8px var(--blue-glow); }
+      50%      { box-shadow: 0 0 18px rgba(6,182,212,0.40); }
+    }
+
+    /* ── Bubble Icon System ───────────────────────
+       Each .bbl is a floating animated bubble container.
+       Inner shapes are drawn with pure CSS.
+    ─────────────────────────────────────────────── */
+    .bbl {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      border-radius: 8px;
+      width: 30px; height: 30px;
+      background: var(--em-surf);
+      border: 1px solid var(--em-bd);
+      transition: transform 350ms var(--spring), box-shadow 200ms ease;
+    }
+
+    /* Float physics removed — icons stay still, only active gets a glow pulse */
+    @keyframes active-glow {
+      0%,100% { box-shadow: 0 0 6px var(--em-glow); }
+      50%      { box-shadow: 0 0 14px var(--em-glow); }
+    }
+    /* Keep class names so HTML doesn't need to change, but remove the float */
+    .bbl-f1, .bbl-f2, .bbl-f3, .bbl-f4, .bbl-f5 { animation: none; }
+
+    .nav-btn.active .bbl { animation: active-glow 2.4s ease-in-out infinite; }
+    .nav-btn.active .bbl,
+    .bbl:hover { box-shadow: 0 0 12px var(--em-glow); transform: scale(1.08); }
+
+    /* ── Clock Icon ─────────────────────────────── */
+    .ic-clock {
+      width: 13px; height: 13px;
+      border: 2px solid var(--em);
+      border-radius: 50%; position: relative;
+    }
+    .ic-clock::before { /* hour hand */
+      content: ''; position: absolute;
+      bottom: 50%; left: 50%;
+      width: 1.5px; height: 4px;
+      background: var(--em); border-radius: 1px;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-20deg);
+    }
+    .ic-clock::after { /* minute hand */
+      content: ''; position: absolute;
+      bottom: 50%; left: 50%;
+      width: 1.5px; height: 3px;
+      background: var(--em-bright); border-radius: 1px;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(100deg);
+    }
+
+    /* ── Sun/Day Icon ───────────────────────────── */
+    .ic-sun {
+      width: 12px; height: 12px;
+      border: 2px solid var(--em); border-radius: 50%;
+      box-shadow: 0 0 0 2px transparent, 0 0 0 3.5px rgba(16,185,129,0.15);
+      animation: sun-spin 8s linear infinite;
+    }
+    @keyframes sun-spin {
+      to { box-shadow: 0 0 0 2px transparent, 0 0 0 3.5px rgba(16,185,129,0.25); }
+    }
+
+    /* ── History/Archive Dots Icon ──────────────── */
+    .ic-history {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2.5px;
+    }
+    .ic-dot {
+      width: 4px; height: 4px; border-radius: 50%; background: var(--em);
+    }
+    @keyframes ic-pop {
+      0%,100% { transform: scale(1); opacity: 0.7; }
+      50%      { transform: scale(1.35); opacity: 1; }
+    }
+    .ic-dot:nth-child(1) { animation: ic-pop 2s ease-in-out 0.0s infinite; }
+    .ic-dot:nth-child(2) { animation: ic-pop 2s ease-in-out 0.3s infinite; }
+    .ic-dot:nth-child(3) { animation: ic-pop 2s ease-in-out 0.6s infinite; }
+    .ic-dot:nth-child(4) { animation: ic-pop 2s ease-in-out 0.9s infinite; }
+
+    /* ── Folder Icon ────────────────────────────── */
+    .ic-folder {
+      width: 14px; height: 11px; position: relative;
+    }
+    .ic-folder::before { /* body */
+      content: ''; position: absolute;
+      top: 3px; left: 0; right: 0; bottom: 0;
+      background: var(--em); border-radius: 1px 2px 2px 2px;
+    }
+    .ic-folder::after { /* tab */
+      content: ''; position: absolute;
+      top: 0; left: 0;
+      width: 6px; height: 3px;
+      background: var(--em); border-radius: 2px 2px 0 0;
+    }
+
+    /* ── X / Error Icon ─────────────────────────── */
+    .ic-error {
+      width: 12px; height: 12px; position: relative;
+    }
+    .ic-error::before, .ic-error::after {
+      content: ''; position: absolute;
+      top: 50%; left: 50%;
+      width: 12px; height: 2px;
+      background: #f87171; border-radius: 1px;
+    }
+    .ic-error::before { transform: translate(-50%,-50%) rotate(45deg); }
+    .ic-error::after  { transform: translate(-50%,-50%) rotate(-45deg); }
+
+    /* ── Search Lens Icon ───────────────────────── */
+    .ic-search {
+      width: 11px; height: 11px;
+      border: 2px solid var(--tx-3); border-radius: 50%;
+      position: relative;
+    }
+    .ic-search::after {
+      content: ''; position: absolute;
+      bottom: -4px; right: -4px;
+      width: 5px; height: 2px;
+      background: var(--tx-3); border-radius: 1px;
+      transform: rotate(45deg);
+    }
+
+    /* ── Dot activity icon ──────────────────────── */
+    .ic-activity {
+      display: flex; gap: 2px; align-items: flex-end;
+    }
+    .ic-bar {
+      width: 3px; border-radius: 1px; background: var(--em);
+    }
+    .ic-bar:nth-child(1) { height: 5px; animation: bar-wave 1.4s ease-in-out 0.0s infinite; }
+    .ic-bar:nth-child(2) { height: 9px; animation: bar-wave 1.4s ease-in-out 0.2s infinite; }
+    .ic-bar:nth-child(3) { height: 6px; animation: bar-wave 1.4s ease-in-out 0.4s infinite; }
+    @keyframes bar-wave {
+      0%,100% { transform: scaleY(1); }
+      50%      { transform: scaleY(1.5); }
+    }
+
+    /* ── Titlebar ───────────────────────────────── */
+    .titlebar {
+      position: relative; z-index: 10;
+      height: 50px;
+      background: rgba(4,10,6,0.97);
+      backdrop-filter: blur(16px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 18px 0 80px; /* 80px left padding for macOS traffic lights */
+      border-bottom: 1px solid var(--bd);
+      -webkit-app-region: drag;
+    }
+    .titlebar-brand {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 14px; font-weight: 700; letter-spacing: -0.2px;
+      -webkit-app-region: no-drag;
+    }
+    .brand-name { color: var(--tx-1); }
+    .brand-sub  { color: var(--em); font-weight: 500; }
+    .brand-sep  {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--em-dim);
+    }
+    .titlebar-close {
+      width: 26px; height: 26px;
+      border-radius: 50%; border: 1px solid var(--bd);
+      background: rgba(255,255,255,0.04);
+      color: var(--tx-3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 200ms ease;
+      -webkit-app-region: no-drag;
+    }
+    .titlebar-close:hover {
+      background: rgba(248,113,113,0.18);
+      border-color: rgba(248,113,113,0.35);
+      color: #f87171;
+    }
+    .titlebar-close svg {
+      width: 10px; height: 10px;
+      stroke: currentColor; stroke-width: 2.5;
+      fill: none; stroke-linecap: round;
+    }
+
+    /* ── Layout ─────────────────────────────────── */
+    .container { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
+
+    /* ── Sidebar ────────────────────────────────── */
+    .sidebar {
+      width: 196px;
+      border-right: 1px solid var(--bd);
+      background: rgba(0,0,0,0.22);
+      display: flex; flex-direction: column;
+      padding: 14px 8px; gap: 3px;
+    }
+    .sidebar-label {
+      font-size: 9px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--tx-3); padding: 0 10px 10px;
+    }
+    .nav-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px;
+      border: 1px solid transparent; background: transparent;
+      color: var(--tx-2); border-radius: 9px;
+      font-size: 12.5px; font-weight: 500; text-align: left;
+      cursor: pointer; transition: all 200ms ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.03); color: var(--tx-1); }
+    .nav-btn.active {
+      background: var(--em-surf); color: var(--em);
+      border-color: var(--em-bd);
+    }
+    .nav-btn.active .bbl { box-shadow: 0 0 10px var(--em-glow); }
+
+    /* ── Main Content ───────────────────────────── */
+    .main {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; padding: 22px;
+    }
+    .header-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px; gap: 14px;
+    }
+    .view-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+
+    .search-wrap { position: relative; flex: 1; max-width: 380px; }
+    .search-inp {
+      width: 100%; height: 36px;
+      border-radius: 9px; border: 1px solid var(--bd);
+      background: rgba(0,0,0,0.35); color: var(--tx-1);
+      padding: 0 14px 0 38px; font-size: 12.5px;
+      outline: none; transition: border-color 200ms;
+      font-family: 'Inter', sans-serif;
+    }
+    .search-inp::placeholder { color: var(--tx-3); }
+    .search-inp:focus { border-color: rgba(16,185,129,0.4); }
+    .search-icon-bbl {
+      position: absolute; left: 11px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+
+    /* ── Scroll Content ─────────────────────────── */
+    .content {
+      flex: 1; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+    /* ── Recall Cards ───────────────────────────── */
+    .recall-card {
+      padding: 14px 16px;
+      border-radius: var(--r); border: 1px solid var(--bd);
+      background: var(--bg-card);
+      display: flex; gap: 13px; align-items: flex-start;
+      transition: transform 300ms var(--spring), border-color 200ms ease, box-shadow 200ms ease;
+    }
+    .recall-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16,185,129,0.25);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.28);
+    }
+    .rc-body { flex: 1; min-width: 0; }
+    .rc-top {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; margin-bottom: 3px;
+    }
+    .rc-title { font-size: 13px; font-weight: 600; }
+    .rc-time  { font-size: 10.5px; color: var(--tx-3); flex-shrink: 0; margin-left: 8px; }
+    .rc-sub   { font-size: 11.5px; color: var(--tx-2); margin-bottom: 6px; line-height: 1.4; }
+    .rc-tags  { display: flex; flex-wrap: wrap; gap: 5px; }
+    .rc-tag {
+      font-size: 10.5px; color: var(--em);
+      background: var(--em-surf); padding: 2px 7px;
+      border-radius: 4px; border: 1px solid rgba(16,185,129,0.12);
+    }
+    .rc-tag.err {
+      color: #f87171;
+      background: rgba(248,113,113,0.06);
+      border-color: rgba(248,113,113,0.15);
+    }
+
+    /* ── Empty State ────────────────────────────── */
+    .empty-state {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex: 1; color: var(--tx-3); gap: 14px;
+    }
+    .empty-logo {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      object-fit: cover;
+      opacity: 0.35;
+      animation: bubble-float 3s ease-in-out infinite;
+    }
+    .empty-text { font-size: 13px; font-weight: 500; }
+
+    /* ── Spinner ────────────────────────────────── */
+    .rc-spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(16,185,129,0.15);
+      border-top-color: var(--em);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Day summary ────────────────────────────── */
+    .day-stat-card {
+      background: rgba(16,185,129,0.05);
+      border: 1px solid rgba(16,185,129,0.12);
+      border-radius: var(--r); padding: 14px;
+      margin-bottom: 12px; font-size: 13px; color: var(--tx-2);
+    }
+    .day-stat-card strong { color: var(--em); }
+
+    .activity-row {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--bd);
+      padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
+    }
+    .act-name { flex: 1; font-size: 12.5px; }
+    .act-dur  { font-size: 11.5px; color: var(--em); font-weight: 600; }
+
+    /* ── Projects grid ──────────────────────────── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: 10px;
+    }
+    .proj-card {
+      padding: 16px; background: var(--bg-card);
+      border: 1px solid var(--bd); border-radius: var(--r);
+      cursor: pointer; transition: all 280ms var(--spring);
+    }
+    .proj-card:hover {
+      border-color: var(--em);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .proj-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .proj-name { font-size: 13.5px; font-weight: 600; }
+    .proj-time { font-size: 11.5px; color: var(--em); font-weight: 600; }
+    .proj-seen { font-size: 11px; color: var(--tx-3); }
+
+    /* Error card */
+    .recall-card.is-error { border-color: rgba(248,113,113,0.15); }
+    .recall-card.is-error:hover { border-color: rgba(248,113,113,0.35); }
+    .bbl.err {
+      background: rgba(248,113,113,0.07);
+      border-color: rgba(248,113,113,0.2);
+    }
+
+    /* mini pill tag */
+    .mini-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10.5px; background: rgba(255,255,255,0.04);
+      padding: 2px 7px; border-radius: 4px;
+      margin-right: 5px; margin-top: 5px; color: var(--tx-3);
+    }
+    .mini-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--em);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Titlebar ──────────────────────────────── -->
+  <div class="titlebar">
+    <div class="titlebar-brand">
+      <img class="logo-img" src="logo.jpg" alt="Neytreya" />
+      <span class="brand-name">Neytreya</span>
+      <div class="brand-sep"></div>
+      <span class="brand-sub">Recall</span>
+    </div>
+    <button class="titlebar-close" id="close-btn" title="Close">
+      <svg viewBox="0 0 12 12">
+        <line x1="1" y1="1" x2="11" y2="11"/>
+        <line x1="11" y1="1" x2="1" y2="11"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="container">
+
+    <!-- ── Sidebar ───────────────────────────────── -->
+    <div class="sidebar">
+      <div class="sidebar-label">Views</div>
+
+      <button class="nav-btn active" id="tab-recent">
+        <div class="bbl bbl-f1"><div class="ic-clock"></div></div>
+        Recent Timeline
+      </button>
+
+      <button class="nav-btn" id="tab-today">
+        <div class="bbl bbl-f2"><div class="ic-sun"></div></div>
+        Today
+      </button>
+
+      <button class="nav-btn" id="tab-yesterday">
+        <div class="bbl bbl-f3">
+          <div class="ic-history">
+            <div class="ic-dot"></div><div class="ic-dot"></div>
+            <div class="ic-dot"></div><div class="ic-dot"></div>
+          </div>
+        </div>
+        Yesterday
+      </button>
+
+      <button class="nav-btn" id="tab-projects">
+        <div class="bbl bbl-f4"><div class="ic-folder"></div></div>
+        Projects
+      </button>
+
+      <button class="nav-btn" id="tab-errors">
+        <div class="bbl bbl-f5 err"><div class="ic-error"></div></div>
+        Errors Seen
+      </button>
+    </div>
+
+    <!-- ── Main ─────────────────────────────────── -->
+    <div class="main">
+      <div class="header-row">
+        <h2 class="view-title" id="view-title">Recent Timeline</h2>
+        <div class="search-wrap" id="search-wrap">
+          <div class="search-icon-bbl"><div class="ic-search"></div></div>
+          <input type="text" class="search-inp" id="search-inp" placeholder="Search memories…" />
+        </div>
+      </div>
+
+      <div class="content" id="content-area"></div>
+    </div>
+
+  </div>
+
+  <script src="recall.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neytreya · Setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <div class="setup-container">
+    <div class="header">
+      <div class="logo">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </div>
+      <h1>Initializing Neytreya</h1>
+      <p class="subtitle">Setting up your local perceptual intelligence engine.</p>
+    </div>
+
+    <!-- Install Steps -->
+    <div class="steps-container" id="steps-phase">
+      <div class="step" id="step-python">
+        <div class="step-icon"></div>
+        <div class="step-text">Python &amp; Dependencies</div>
+        <div class="step-status">Pending</div>
+      </div>
+      <div class="step" id="step-tesseract">
+        <div class="step-icon"></div>
+        <div class="step-text">Tesseract OCR</div>
+        <div class="step-status">Pending</div>
+      </div>
+      <div class="step" id="step-tts">
+        <div class="step-icon"></div>
+        <div class="step-text">Kokoro TTS Engine</div>
+        <div class="step-status">Pending</div>
+      </div>
+      <div class="step" id="step-rexycore">
+        <div class="step-icon"></div>
+        <div class="step-text">RexyCore API Hub</div>
+        <div class="step-status">Pending</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="log-container" id="log-container">
+      <div class="log-line">Starting setup...</div>
+    </div>
+
+    <button class="btn hidden" id="btn-finish">Continue →</button>
+  </div>
+  <script src="setup.js"></script>
+</body>
+</html>

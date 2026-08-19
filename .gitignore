@@ -1,0 +1,17 @@
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+.env
+backend/venv/
+backend/.env
+electron/dist/
+electron/node_modules/
+.venv/
+*.egg-info/
+dist/
+build/
+*.dmg
+*.exe
+*.pycache

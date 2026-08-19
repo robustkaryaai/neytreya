@@ -1,0 +1,75 @@
+:root {
+  --bg: rgba(6, 14, 9, 0.7);
+  --bg-blur: blur(20px);
+  --bd: rgba(16, 185, 129, 0.3);
+  --tx-1: #ffffff;
+  --tx-2: #a0b3a8;
+  --tx-3: #6b7d73;
+  --em: #10b981;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  background: transparent;
+  color: var(--tx-1);
+}
+
+.qr-container {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  backdrop-filter: var(--bg-blur);
+  -webkit-backdrop-filter: var(--bg-blur);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  margin: 10px;
+}
+
+.qr-icon {
+  font-size: 24px;
+  margin-right: 16px;
+}
+
+#qr-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--tx-1);
+  font-size: 20px;
+  font-weight: 500;
+  outline: none;
+  font-family: inherit;
+}
+
+#qr-input::placeholder {
+  color: var(--tx-3);
+}
+
+.qr-shortcut {
+  font-size: 12px;
+  color: var(--tx-3);
+  background: rgba(255,255,255,0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 16px;
+}
+
+.qr-results {
+  background: var(--bg);
+  backdrop-filter: var(--bg-blur);
+  -webkit-backdrop-filter: var(--bg-blur);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  margin: 0 10px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tx-2);
+}

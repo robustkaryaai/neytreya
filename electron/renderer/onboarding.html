@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+                 font-src https://fonts.gstatic.com;
+                 script-src 'self';" />
+  <title>Neytreya · Setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+<body>
+<div class="ob-root">
+
+  <!-- Drag bar -->
+  <div class="drag-bar"><div class="drag-handle"></div></div>
+
+  <!-- Progress dots -->
+  <div class="progress-bar" id="progress">
+    <div class="p-dot active"></div>
+    <div class="p-dot"></div>
+    <div class="p-dot"></div>
+    <div class="p-dot"></div>
+    <div class="p-dot"></div>
+    <div class="p-dot"></div>
+  </div>
+
+  <!-- ─────────────── Steps ─────────────────────────────────── -->
+  <div class="steps" id="steps">
+
+    <!-- ── Step 1: Welcome / Auth ──────────────────────────── -->
+    <div class="step active" id="step-1">
+
+      <div class="ob-eye-wrap">
+        <div class="ob-eye"><div class="ob-pupil"></div></div>
+      </div>
+
+      <h1>Welcome to<br><span class="em">Neytreya</span></h1>
+      <p class="sub">Perceptual Intelligence for your Mac.<br>Watches. Understands. Never speaks unless needed.</p>
+
+      <div class="auth-card">
+        <input type="email"    class="ob-inp"  id="auth-email" placeholder="you@email.com" autocomplete="off" />
+        <input type="password" class="ob-inp"  id="auth-pass"  placeholder="Password"       autocomplete="off" />
+        <button class="btn-em" id="btn-signin">Continue →</button>
+
+        <div class="divider"><span>or</span></div>
+
+        <button class="btn-google" id="btn-google">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908C16.658 14.233 17.64 11.925 17.64 9.2z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <button class="btn-ghost" id="btn-offline">Skip — use offline, no account →</button>
+      </div>
+
+    </div>
+
+    <!-- ── Step 2: Your Name ────────────────────────────────── -->
+    <div class="step" id="step-2">
+      <div class="step-emoji">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <h2>What should I<br>call you?</h2>
+      <p class="sub">I'll use this to personalise my observations.</p>
+      <input type="text" class="ob-inp xl" id="user-name"
+             placeholder="Your name" maxlength="32" autocomplete="off" />
+      <div class="nav-row">
+        <button class="btn-back" id="back-2">← Back</button>
+        <button class="btn-em sm" id="next-2">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── Step 3: Work Style ───────────────────────────────── -->
+    <div class="step" id="step-3">
+      <div class="step-emoji">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6"></path><path d="M10 22h4"></path>
+          <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+        </svg>
+      </div>
+      <h2>How do you<br>spend your time?</h2>
+      <p class="sub">Select all that apply — I'll tune my context engine.</p>
+      <div class="style-grid" id="style-grid">
+        <div class="style-card" data-value="developer"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg></div>Developer</div>
+        <div class="style-card" data-value="designer"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg></div>Designer</div>
+        <div class="style-card" data-value="writer"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg></div>Writer</div>
+        <div class="style-card" data-value="researcher"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>Researcher</div>
+        <div class="style-card" data-value="manager"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg></div>Manager</div>
+        <div class="style-card" data-value="mixed"><div class="style-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline></svg></div>Mixed</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" id="back-3">← Back</button>
+        <button class="btn-em sm" id="next-3">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── Step 4: Quiet Hours ──────────────────────────────── -->
+    <div class="step" id="step-4">
+      <div class="step-emoji">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </div>
+      <h2>When should I<br>stay silent?</h2>
+      <p class="sub">Set hours when I won't observe or notify.<br><strong style="color:var(--tx-2)">Leave both at 00:00 to stay always active.</strong></p>
+      <div class="quiet-card">
+        <div class="quiet-row">
+          <span class="quiet-lbl">From</span>
+          <input type="time" class="ob-inp time-inp" id="quiet-from" value="00:00" />
+        </div>
+        <div class="quiet-sep">↓</div>
+        <div class="quiet-row">
+          <span class="quiet-lbl">To</span>
+          <input type="time" class="ob-inp time-inp" id="quiet-to" value="00:00" />
+        </div>
+        <p class="quiet-hint" id="quiet-hint">🟢 Always active — no quiet hours set</p>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" id="back-4">← Back</button>
+        <button class="btn-em sm" id="next-4">Next →</button>
+      </div>
+    </div>
+
+
+    <!-- ── Step 5: Vision ───────────────────────────────────── -->
+    <div class="step" id="step-5">
+      <div class="step-emoji">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </div>
+      <h2>Deep screen<br>understanding?</h2>
+      <p class="sub">Uses a local AI model via Ollama.<br>Everything stays on your device — nothing leaves.</p>
+
+      <div class="vis-toggle-row">
+        <span class="vis-label" id="vis-label">Disabled</span>
+        <label class="big-tog">
+          <input type="checkbox" id="ob-vision" />
+          <span class="big-track"><span class="big-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="model-section" id="model-section" style="display:none">
+        <div class="model-detecting" id="model-detecting">
+          <div class="detect-spinner"></div>
+          <span>Detecting your system…</span>
+        </div>
+        <div class="spec-badge hidden" id="spec-badge">
+          <span id="spec-platform"></span>
+          <span class="spec-sep">·</span>
+          <span id="spec-ram"></span> RAM
+        </div>
+        <div class="model-title">Choose Vision Model</div>
+        <div class="model-grid" id="model-grid"></div>
+        <div class="pull-progress hidden" id="pull-progress">
+          <div class="pull-label">
+            <span id="pull-model-name">Installing model…</span>
+            <span id="pull-pct">0%</span>
+          </div>
+          <div class="pull-track">
+            <div class="pull-fill" id="pull-fill"></div>
+          </div>
+          <div class="pull-status" id="pull-status">Downloading…</div>
+        </div>
+        <div class="ollama-hint">
+          Requires <a id="ollama-link" style="color:var(--em);cursor:pointer">Ollama</a> running locally.
+          Only fires on LOW system load.
+        </div>
+      </div>
+
+      <div class="nav-row" id="vision-nav-row">
+        <button class="btn-back" id="back-5">← Back</button>
+        <button class="btn-em sm" id="next-5">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── Step 6: Done! ────────────────────────────────────── -->
+    <div class="step" id="step-6">
+
+      <div class="done-orb"></div>
+      <h2>All set,<br><span class="em" id="done-name">friend</span>.</h2>
+      <p class="sub">Neytreya will now quietly watch over your work.<br>Look for the eye icon in the top menubar.</p>
+      <button class="btn-em lg" id="btn-launch" style="width:100%">Launch Neytreya →</button>
+      <p class="done-hint">You can change every setting anytime by clicking the eye.<br>Your data never leaves this device.</p>
+    </div>
+
+  </div><!-- /steps -->
+
+</div><!-- /ob-root -->
+<script src="onboarding.js"></script>
+</body>
+</html>

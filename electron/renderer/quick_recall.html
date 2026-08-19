@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="quick_recall.css">
+</head>
+<body>
+  <div class="qr-container">
+    <div class="qr-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </div>
+    <input type="text" id="qr-input" placeholder="Ask Neytreya... (e.g. 'What was I working on yesterday?')" autocomplete="off" autofocus>
+    <div class="qr-shortcut">esc</div>
+  </div>
+  <div id="qr-results" class="qr-results" style="display:none;"></div>
+  
+  <script src="quick_recall.js"></script>
+</body>
+</html>

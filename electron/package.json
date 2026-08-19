@@ -1,0 +1,95 @@
+{
+  "name": "neytreya",
+  "version": "1.0.0",
+  "description": "Perceptual Intelligence Desktop Watcher",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:win:x64": "electron-builder --win --x64",
+    "dist:win:arm64": "electron-builder --win --arm64",
+    "dist:win:all": "electron-builder --win --x64 --arm64"
+  },
+  "keywords": [
+    "perceptual",
+    "intelligence",
+    "desktop",
+    "watcher"
+  ],
+  "author": "Neytreya",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.neytreya.app",
+    "productName": "Neytreya",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!resources/backend/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/backend",
+        "to": "backend"
+      }
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.inherit.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist"
+    },
+    "dmg": {
+      "background": "build/dmg_background.tiff",
+      "window": {
+        "width": 1280,
+        "height": 800
+      },
+      "contents": [
+        {
+          "x": 320,
+          "y": 360
+        },
+        {
+          "x": 960,
+          "y": 360,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "artifactName": "Neytreya-${version}-${arch}-Setup.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerHeader": "build/installer-header.png"
+    },
+    "protocols": [
+      {
+        "name": "Neytreya URL",
+        "schemes": [
+          "neytreya"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: http://127.0.0.1:7432; connect-src 'self' http://127.0.0.1:7432 ws://127.0.0.1:7432 https://fonts.googleapis.com;">
+  <title>Neytreya Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Full Window Frame (Glass) -->
+  <div class="panel-frame">
+
+    <!-- Header (Tabs) -->
+    <div class="panel-header">
+      <div class="header-brand">
+        <svg class="header-logo" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 5C6.5 5 3 10 3 10C3 10 6.5 15 10 15C13.5 15 17 10 17 10C17 10 13.5 5 10 5Z" stroke="#10b981" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="10" cy="10" r="3" stroke="#10b981" stroke-width="1.4"/>
+          <circle cx="10" cy="10" r="1.2" fill="#10b981"/>
+        </svg>
+        <span>Neytreya</span>
+      </div>
+      <div class="panel-tabs">
+        <button class="tab-btn active" data-target="tab-status">Status</button>
+        <button class="tab-btn" data-target="tab-recall">Recall</button>
+        <button class="tab-btn" data-target="tab-settings">Settings</button>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="panel-content">
+      
+      <!-- ── TAB: STATUS ──────────────────────────────────── -->
+      <div class="tab-pane active" id="tab-status">
+        
+        <!-- Live Activity Card -->
+        <div class="live-card">
+          <div class="live-header">
+            <div class="live-pulse"></div>
+            <span id="live-app">Waiting for activity...</span>
+          </div>
+          <div class="live-body" id="live-activity">Starting engine...</div>
+          <div class="live-meta">
+            <span id="live-time">--:--</span> &middot; <span id="live-window">Desktop</span>
+          </div>
+        </div>
+
+        <!-- System Resources -->
+        <div class="s-section" id="resource-section">
+          <div class="s-label-row">
+            <span class="s-section-title">SYSTEM RESOURCES</span>
+            <span class="s-status" id="res-load-tier" style="font-size:10px;letter-spacing:.5px">LOW</span>
+          </div>
+          <div class="res-bars">
+            <div class="res-row">
+              <span class="res-label">CPU</span>
+              <div class="res-track"><div class="res-fill" id="res-cpu-bar"></div></div>
+              <span class="res-val" id="res-cpu-val">--%</span>
+            </div>
+            <div class="res-row">
+              <span class="res-label">RAM</span>
+              <div class="res-track"><div class="res-fill" id="res-ram-bar"></div></div>
+              <span class="res-val" id="res-ram-val">--%</span>
+            </div>
+            <div class="res-row" id="res-battery-row" style="display:none">
+              <span class="res-label">BAT</span>
+              <div class="res-track"><div class="res-fill" id="res-bat-bar"></div></div>
+              <span class="res-val" id="res-bat-val">--%</span>
+            </div>
+          </div>
+          <div class="res-log" id="res-log">
+            <div class="res-log-empty">Monitoring resources... events will appear here.</div>
+          </div>
+        </div>
+
+        <!-- Vision Status -->
+        <div class="s-section">
+          <div class="s-label-row">
+            <span class="s-section-title">VISION ENGINE</span>
+            <span class="s-status ok" id="status-vision">ONLINE</span>
+          </div>
+          <p class="s-desc" id="status-vision-desc">Monitoring screen for context and errors.</p>
+        </div>
+
+        <!-- Latest Observations (Feed) -->
+        <div class="s-section">
+          <div class="s-label-row">
+            <span class="s-section-title">OBSERVATIONS</span>
+            <button class="btn-clear" id="btn-clear-obs">Clear</button>
+          </div>
+          <div class="obs-list" id="obs-list">
+            <div class="obs-empty">No observations yet. Leave Neytreya running in the background.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TAB: RECALL ──────────────────────────────────── -->
+      <div class="tab-pane" id="tab-recall">
+        
+        <div class="recall-hero">
+          <div class="recall-hero-icon">
+            <div class="ic-history"><div class="ic-dot"></div><div class="ic-dot"></div><div class="ic-dot"></div><div class="ic-dot"></div></div>
+          </div>
+          <div class="recall-hero-title">Photographic Memory</div>
+          <div class="recall-hero-desc">Search past context, errors, and project timelines.</div>
+          <div class="s-hero-btns">
+            <button class="btn-primary" id="btn-open-recall">Expand Timeline Window</button>
+          </div>
+        </div>
+
+        <div class="s-section" style="margin-top:20px; position:relative;">
+          <input type="text" id="recall-chat-input" class="s-input" style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: white;" placeholder="Ask Neytreya about your timeline... (Press Enter)">
+          <div id="recall-chat-response" style="margin-top: 10px; font-size: 13px; color: var(--tx-2); font-style: italic;"></div>
+        </div>
+
+        <div class="s-section" style="margin-top:20px">
+          <div class="s-label-row">
+            <span class="s-section-title">RECENT ACTIVITY</span>
+          </div>
+          <div class="recall-mini-list" id="recall-mini-list">
+            <div class="recall-mini-empty">Loading recent memories...</div>
+          </div>
+        </div>
+
+        <div class="s-section" style="margin-top:16px">
+          <div class="s-label-row">
+            <span class="s-section-title">ACTIVE RECALL · LAST SUMMARY</span>
+            <span class="recall-live-dot" id="recall-live-dot">●</span>
+          </div>
+          <div class="recall-last-summary" id="recall-last-summary">
+            <div class="recall-mini-empty">Summaries appear every 5 minutes...</div>
+          </div>
+        </div>
+
+        <div class="s-section" style="margin-top:16px;padding-bottom:12px">
+          <div class="s-label-row">
+            <span class="s-section-title">VISUAL TIMELINE · TODAY</span>
+            <button class="recall-refresh-btn" id="recall-timeline-refresh">↻ Refresh</button>
+          </div>
+          <div class="recall-timeline-strip" id="recall-timeline-strip">
+            <div class="recall-mini-empty">Screenshots appear every minute...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TAB: SETTINGS ────────────────────────────────── -->
+      <div class="tab-pane" id="tab-settings">
+        
+        <!-- Toggle: Quiet Mode -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">Active Watching</div>
+            <div class="s-row-desc">Pause Neytreya's recording temporarily.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-watching" checked><span class="slider"></span></label>
+        </div>
+
+        <!-- Toggle: OCR Screen Reading -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">OCR Screen Reading</div>
+            <div class="s-row-desc">Reads on-screen text for context. Fast, no GPU required.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-ocr" checked><span class="slider"></span></label>
+        </div>
+
+        <!-- Toggle: AI Vision (Ollama) -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">AI Vision (Ollama)</div>
+            <div class="s-row-desc">Qwen3-VL visual understanding. Requires Ollama running.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-vision"><span class="slider"></span></label>
+        </div>
+
+        <!-- Toggle: Audio Recall -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">Audio Recall</div>
+            <div class="s-row-desc" id="audio-recall-desc">Transcribe speaker audio (Hindi+English). Downloads ~150MB Whisper model on first use.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-audio-recall"><span class="slider"></span></label>
+        </div>
+
+        <!-- Toggle: Local Embeddings -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">Context Indexing</div>
+            <div class="s-row-desc">Save text to semantic local database.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-indexing" checked><span class="slider"></span></label>
+        </div>
+
+        <!-- Toggle: Launch at Login -->
+        <div class="s-row">
+          <div class="s-row-left">
+            <div class="s-row-title">Launch at Login</div>
+            <div class="s-row-desc">Start Neytreya automatically when you log in.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-login-item"><span class="slider"></span></label>
+        </div>
+
+        <div class="s-section" style="margin-top:16px">
+          <div class="s-label-row">
+            <span class="s-section-title">BLOCKED APPS</span>
+          </div>
+          <p class="s-desc">Neytreya will pause observation when these apps are active.</p>
+          <input type="text" id="blocked-apps" class="s-input" placeholder="e.g. 1Password, Signal, Authy" value="1Password, Signal, Keychain">
+        </div>
+        
+        <div class="s-section" style="margin-top:16px">
+          <div class="s-label-row">
+            <span class="s-section-title">REPORTS</span>
+          </div>
+          <p class="s-desc">Generate a professional PDF report of your recent activity and productivity trends.</p>
+          <button class="btn-secondary" id="btn-monthly-report" style="width:100%; margin-top:8px">Generate Monthly Report (PDF)</button>
+        </div>
+
+        <div class="s-section" style="margin-top:16px">
+          <div class="s-label-row">
+            <span class="s-section-title">SPEECH (KOKORO TTS)</span>
+          </div>
+          <p class="s-desc">Local offline speech generation for notifications and responses.</p>
+          <div class="s-row" style="margin-top: 8px; padding: 0;">
+            <div class="s-row-left">
+              <div class="s-row-title">Voice Model</div>
+            </div>
+            <select class="s-input" style="width: 140px;" id="tts-voice">
+              <option value="af_heart">Heart (EN-US)</option>
+              <option value="af_alloy">Alloy (EN-US)</option>
+              <option value="af_nova">Nova (EN-US)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="s-section" style="margin-top:24px; border: 1px solid rgba(16, 185, 129, 0.4); padding: 16px; border-radius: 12px; background: linear-gradient(145deg, #0c1811 0%, #060e09 100%); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05); text-align: center;">
+          <div class="s-label-row" style="justify-content: center; margin-bottom: 8px;">
+            <span class="s-section-title" style="color: var(--em); font-weight: 700; letter-spacing: 1px;">NEYTREYA PRO</span>
+          </div>
+          <p class="s-desc" style="color: var(--tx-2); margin-bottom: 16px;">Unlock Cloud Sync, Gemini 3.1 Live, Voice Conversations, and multi-device support.</p>
+          
+          <button class="btn-primary" id="btn-upgrade-pro" disabled style="width:100%; background: var(--tx-3); box-shadow: none; cursor: not-allowed;">Coming Soon</button>
+        </div>
+
+        <button class="btn-secondary" id="btn-save-settings" style="width:100%; margin-top:16px">Save Settings</button>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="panel-footer">
+      <span class="footer-v">Neytreya Beta v1.0 &middot; <span id="auth-status-text">Not Logged In</span></span>
+      <span class="footer-status" id="ws-status">Connecting...</span>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
