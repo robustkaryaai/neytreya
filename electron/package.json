@@ -33,7 +33,7 @@
     "publish": {
       "provider": "github",
       "owner": "robustkaryaai",
-      "repo": "neytreya"
+      "repo": "neytreya_download"
     },
     "directories": {
       "output": "dist"
