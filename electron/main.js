@@ -293,7 +293,29 @@ function openRecallWindow() {
   recallWindow.on('closed', () => {
     recallWindow = null;
     // Hide dock again when recall closes (if no other visible windows)
-    app.dock?.hide();
+    if (!galleryWindow) app.dock?.hide();
+  });
+}
+
+let galleryWindow = null;
+function openGalleryWindow() {
+  if (galleryWindow && !galleryWindow.isDestroyed()) { galleryWindow.focus(); return; }
+  app.dock?.show();
+  galleryWindow = new BrowserWindow({
+    width: 900, height: 700, center: true,
+    frame: false, transparent: false, backgroundColor: '#060e09',
+    resizable: true, minWidth: 640, minHeight: 480,
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, nodeIntegration: false, sandbox: false,
+    },
+  });
+  galleryWindow.loadFile(path.join(__dirname, 'renderer', 'gallery.html'));
+  galleryWindow.once('ready-to-show', () => { galleryWindow.show(); galleryWindow.focus(); });
+  galleryWindow.on('closed', () => {
+    galleryWindow = null;
+    if (!recallWindow) app.dock?.hide();
   });
 }
 
@@ -732,6 +754,7 @@ ipcMain.handle('set-login-item', (_event, enabled) => {
 });
 ipcMain.on('open-rk-ai', (_event, context) => console.log('[rk-ai] context:', JSON.stringify(context)));
 ipcMain.handle('open-recall', () => { openRecallWindow(); return { ok: true }; });
+ipcMain.on('open-gallery', () => openGalleryWindow());
 ipcMain.on('close-recall', () => { recallWindow?.close(); });
 ipcMain.handle('generate-monthly-report', async () => {
   const http = require('http');

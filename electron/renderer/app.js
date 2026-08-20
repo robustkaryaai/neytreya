@@ -515,6 +515,15 @@ if (btnMonthlyReport) {
     });
   }
 
+  const btnViewAll = document.getElementById('recall-view-all-btn');
+  if (btnViewAll) {
+    btnViewAll.addEventListener('click', () => {
+      if (window.neytreya && window.neytreya.openGallery) {
+        window.neytreya.openGallery();
+      }
+    });
+  }
+
   fetchActiveTimeline();
   connectWS();
 }

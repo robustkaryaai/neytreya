@@ -85,6 +85,7 @@ contextBridge.exposeInMainWorld('neytreya', {
 
   /** Open a snapshot file in the system's default image viewer (Preview on macOS) */
   openSnapshot: (filename) => ipcRenderer.invoke('open-snapshot', filename),
+  openGallery: () => ipcRenderer.send('open-gallery'),
 
   // ── Quick Recall ──────────────────────────────────────────────────────────
   closeQuickRecall: () => ipcRenderer.invoke('close-quick-recall'),

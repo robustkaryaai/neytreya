@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gallery</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #060e09; color: #fff; margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header h2 { margin: 0; }
+    .close-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .date-filter { background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 6px; outline: none; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .grid-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s; }
+    .grid-item:hover { transform: scale(1.02); border-color: rgba(255,255,255,0.4); }
+    .grid-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .grid-time { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .empty { padding: 40px; text-align: center; color: rgba(255,255,255,0.5); grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <div class="header" style="-webkit-app-region: drag;">
+    <h2>Visual Timeline</h2>
+    <div style="-webkit-app-region: no-drag; display: flex; gap: 12px; align-items: center;">
+      <input type="date" id="date-picker" class="date-filter">
+      <button class="close-btn" onclick="window.close()">Close</button>
+    </div>
+  </div>
+  <div class="grid" id="grid">
+    <div class="empty">Loading...</div>
+  </div>
+  <script>
+    const grid = document.getElementById('grid');
+    const datePicker = document.getElementById('date-picker');
+    
+    // Set today as default
+    const today = new Date().toISOString().split('T')[0];
+    datePicker.value = today;
+
+    function esc(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function loadGallery(date) {
+      grid.innerHTML = '<div class="empty">Loading...</div>';
+      try {
+        const res = await fetch('http://127.0.0.1:7432/recall/active-timeline?date=' + encodeURIComponent(date));
+        if (!res.ok) throw new Error('Network error');
+        const data = await res.json();
+        
+        if (!data.snapshots || data.snapshots.length === 0) {
+          grid.innerHTML = '<div class="empty">No screenshots recorded for this date.</div>';
+          return;
+        }
+
+        grid.innerHTML = data.snapshots.reverse().map(snap => {
+          const baseName = snap.filename.split('/').pop();
+          return `
+            <div class="grid-item" onclick="window.neytreya.openSnapshot('${baseName}')">
+              <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(baseName)}" />
+              <div class="grid-time">${esc(snap.time || '')}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<div class="empty">Error loading screenshots. Is the backend running?</div>';
+      }
+    }
+
+    datePicker.addEventListener('change', (e) => {
+      loadGallery(e.target.value);
+    });
+
+    loadGallery(today);
+  </script>
+</body>
+</html>
