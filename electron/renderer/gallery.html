@@ -15,6 +15,8 @@
     .grid-item:hover { transform: scale(1.02); border-color: rgba(255,255,255,0.4); }
     .grid-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
     .grid-time { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(220,38,38,0.8); border: none; color: white; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; display: none; }
+    .grid-item:hover .delete-btn { display: block; }
     .empty { padding: 40px; text-align: center; color: rgba(255,255,255,0.5); grid-column: 1 / -1; }
   </style>
 </head>
@@ -22,7 +24,9 @@
   <div class="header" style="-webkit-app-region: drag;">
     <h2>Visual Timeline</h2>
     <div style="-webkit-app-region: no-drag; display: flex; gap: 12px; align-items: center;">
-      <input type="date" id="date-picker" class="date-filter">
+      <select id="date-picker" class="date-filter">
+        <option value="all">All Dates</option>
+      </select>
       <button class="close-btn" onclick="window.close()">Close</button>
     </div>
   </div>
@@ -33,9 +37,14 @@
     const grid = document.getElementById('grid');
     const datePicker = document.getElementById('date-picker');
     
-    // Set today as default
+    // Add today option
     const today = new Date().toISOString().split('T')[0];
-    datePicker.value = today;
+    const option = document.createElement('option');
+    option.value = today;
+    option.textContent = 'Today (' + today + ')';
+    datePicker.appendChild(option);
+    
+    datePicker.value = 'all';
 
     function esc(str) {
       if (!str) return '';
@@ -57,9 +66,10 @@
         grid.innerHTML = data.snapshots.reverse().map(snap => {
           const baseName = snap.filename.split('/').pop();
           return `
-            <div class="grid-item" onclick="window.neytreya.openSnapshot('${baseName}')">
-              <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(baseName)}" />
+            <div class="grid-item">
+              <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(baseName)}" onclick="window.neytreya.openSnapshot('${baseName}')" />
               <div class="grid-time">${esc(snap.time || '')}</div>
+              <button class="delete-btn" onclick="deleteSnapshot(event, '${baseName}')">🗑</button>
             </div>
           `;
         }).join('');
@@ -69,11 +79,22 @@
       }
     }
 
+    async function deleteSnapshot(e, baseName) {
+      e.stopPropagation();
+      if (!confirm('Delete this screenshot?')) return;
+      try {
+        await fetch('http://127.0.0.1:7432/recall/snapshot/' + encodeURIComponent(baseName), { method: 'DELETE' });
+        loadGallery(datePicker.value);
+      } catch(err) {
+        alert('Failed to delete');
+      }
+    }
+
     datePicker.addEventListener('change', (e) => {
       loadGallery(e.target.value);
     });
 
-    loadGallery(today);
+    loadGallery('all');
   </script>
 </body>
 </html>

@@ -796,14 +796,29 @@ async def recall_project(name: str):
 
 @app.get("/recall/active-timeline")
 async def recall_active_timeline(date: str = ""):
-    """Return visual snapshots + Qwen summaries for a date (defaults to today)."""
+    """Return visual snapshots + Qwen summaries for a date (or all if empty)."""
     import base64
     from perception.active_recall import RECALL_DIR
-    target_date = date or datetime.now().strftime("%Y-%m-%d")
-    summaries = await db.get_recall_summaries_for_date(target_date)
-    snapshots = await asyncio.to_thread(active_recall.get_snapshots_for_date, target_date)
+    target_date = date.strip()
+    
+    if not target_date or target_date == "all":
+        # Get all snapshots from all dates
+        snapshots = await asyncio.to_thread(lambda: [
+            {
+                "path": str(f),
+                "filename": f.name,
+                "time": f.stem[:10] + " " + f.stem[11:19].replace("-", ":"),
+                "size_kb": round(f.stat().st_size / 1024, 1),
+            }
+            for f in sorted(RECALL_DIR.glob("*.webp"))
+        ])
+        summaries = []
+    else:
+        summaries = await db.get_recall_summaries_for_date(target_date)
+        snapshots = await asyncio.to_thread(active_recall.get_snapshots_for_date, target_date)
+        
     return {
-        "date": target_date,
+        "date": target_date or "all",
         "summaries": summaries,
         "snapshots": snapshots,
     }
@@ -814,10 +829,20 @@ async def recall_snapshot_image(filename: str):
     from perception.active_recall import RECALL_DIR
     from fastapi.responses import Response
     filepath = RECALL_DIR / filename
-    if not filepath.exists() or not filepath.suffix == ".webp":
-        return JSONResponse(status_code=404, content={"error": "Not found"})
+    if not filepath.exists():
+        return Response(status_code=404)
     data = filepath.read_bytes()
     return Response(content=data, media_type="image/webp")
+
+@app.delete("/recall/snapshot/{filename}")
+async def delete_recall_snapshot(filename: str):
+    """Delete a specific recall snapshot."""
+    from perception.active_recall import RECALL_DIR
+    filepath = RECALL_DIR / filename
+    if filepath.exists():
+        filepath.unlink()
+        return {"ok": True}
+    return {"ok": False, "error": "Not found"}
 
 
 @app.get("/recall/transcript/live")
