@@ -7,6 +7,7 @@ const path = require('path');
 const { spawn, execSync, exec } = require('child_process');
 const fs   = require('fs');
 const os   = require('os');
+const { autoUpdater } = require('electron-updater');
 
 // ---------------------------------------------------------------------------
 // Config
@@ -1015,6 +1016,7 @@ function openGoogleOAuth() {
 // ---------------------------------------------------------------------------
 
 app.whenReady().then(async () => {
+  autoUpdater.checkForUpdatesAndNotify().catch(e => console.error("Auto-updater failed:", e));
   ensureDataDir();
   // Dock stays visible during setup/onboarding so user sees the app is running
   await checkAndRequestPermissions();

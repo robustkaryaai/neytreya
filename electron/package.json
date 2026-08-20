@@ -22,6 +22,7 @@
   ],
   "author": "Neytreya",
   "license": "MIT",
+  "repository": "github:robustkaryaai/neytreya",
   "devDependencies": {
     "electron": "^30.0.0",
     "electron-builder": "^24.13.3"
@@ -29,6 +30,11 @@
   "build": {
     "appId": "com.neytreya.app",
     "productName": "Neytreya",
+    "publish": {
+      "provider": "github",
+      "owner": "robustkaryaai",
+      "repo": "neytreya"
+    },
     "directories": {
       "output": "dist"
     },
@@ -94,5 +100,8 @@
         ]
       }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
   }
 }
