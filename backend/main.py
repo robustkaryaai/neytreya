@@ -475,9 +475,34 @@ async def recall_loop() -> None:
 
 
 
+import subprocess
+
+def start_ollama_service():
+    """Attempt to start the Ollama background service silently."""
+    try:
+        if platform.system() == "Windows":
+            # On Windows, try to run ollama serve silently
+            subprocess.Popen(
+                ["ollama", "serve"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+        else:
+            # On Mac/Linux, run ollama serve
+            subprocess.Popen(
+                ["ollama", "serve"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True
+            )
+    except Exception:
+        pass
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initialising Neytreya …")
+    start_ollama_service()
     await db.init()
     loop_task   = asyncio.create_task(perception_loop())
     recall_task = asyncio.create_task(recall_loop())
