@@ -86,3 +86,7 @@ class NeytreyadSettings(BaseSettings):
 
     def is_app_blocked(self, app_name: str) -> bool:
         return any(b.lower() in app_name.lower() for b in self.blocked_apps)
+
+
+# Module-level singleton — import this everywhere: `from config import settings`
+settings: NeytreyadSettings = NeytreyadSettings.load()
