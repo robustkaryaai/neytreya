@@ -422,7 +422,7 @@ async def recall_loop() -> None:
                     # Grab any audio transcript from the last 5 minutes
                     audio_transcript = audio_watcher.rolling_transcript
 
-                    if img is not None and await vision.is_available():
+                    if img is not None and settings.vision_enabled and await vision.is_available():
                         ctx_hint = f"{cur_app} · {cur_window}"
                         if audio_transcript:
                             ctx_hint += f" | Audio: {audio_transcript[:300]}"
@@ -779,7 +779,8 @@ async def recall_chat(payload: dict):
                 if resp.status_code == 200:
                     response = resp.json().get("response", "No response generated.")
                 else:
-                    response = "Failed to fetch response from Ollama."
+                    err_txt = resp.text
+                    response = f"Ollama Error ({resp.status_code}): {err_txt}"
         else:
             response = "Qwen model is not available to answer this right now."
             

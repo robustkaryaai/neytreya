@@ -8,6 +8,8 @@ from typing import Optional
 
 import httpx
 
+from config import settings
+
 logger = logging.getLogger(__name__)
 
 # ── qwen3-vl model tiers (VL-only, ordered best→lightest) ────────────────────
