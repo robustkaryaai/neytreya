@@ -24,7 +24,7 @@ class NeytreyadSettings(BaseSettings):
 
     # Vision / Ollama (Phase 2)
     vision_enabled: bool = False        # Ollama qwen3-vl — separate from OCR
-    vision_model: str = "qwen3-vl:8b"
+    vision_model: str = "qwen3-vl:4b"
     ollama_url: str = "http://localhost:11434"
 
     # RK AI (Phase 3)
