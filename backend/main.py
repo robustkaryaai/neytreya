@@ -16,6 +16,7 @@ import os
 import platform
 import ssl
 import sys
+import httpx
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Set

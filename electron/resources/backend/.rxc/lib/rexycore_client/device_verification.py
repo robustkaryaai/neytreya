@@ -5,6 +5,7 @@ import logging
 import urllib.request
 import urllib.error
 import asyncio
+import ssl
 from pathlib import Path
 from typing import Dict, Any
 
@@ -55,8 +56,10 @@ class DeviceVerifier:
         """Synchronous HTTP call to the backend."""
         url = self.BACKEND_URL_TEMPLATE.format(slug=slug)
         req = urllib.request.Request(url)
+        # Use unverified context to fix macOS python cert issues
+        context = ssl._create_unverified_context()
         # Using a short timeout to prevent blocking startup for too long if offline
-        with urllib.request.urlopen(req, timeout=5.0) as response:
+        with urllib.request.urlopen(req, timeout=5.0, context=context) as response:
             data = response.read()
             return json.loads(data)
 
