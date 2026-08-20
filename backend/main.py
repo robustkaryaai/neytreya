@@ -105,7 +105,7 @@ async def _fetch_llm_category(app: str, title: str, cache_key: str):
 _latest_payload: dict = {}
 
 # Self-apps that should be ignored so panel stays on last real context
-_SELF_APP_NAMES = {"electron", "neytreya", "neytreya.app"}
+_SELF_APP_NAMES = {"electron", "neytreya", "neytreya.app", "explorer", "shellexperiencehost", "searchhost", "startmenuexperiencehost", "textinputhost"}
 # Last real app seen before we opened the panel
 _last_known_app:   str | None = None
 _last_known_window:str | None = None
@@ -137,12 +137,16 @@ async def perception_tick() -> dict:
         window_title= info.get("window_title")
 
     # Skip self (Neytreya / Electron panel) — keep showing last real context
-    if active_app and active_app.lower().rstrip('.app') in _SELF_APP_NAMES:
-        active_app   = _last_known_app
-        window_title = _last_known_window
-    elif active_app and active_app != "[blocked]":
-        _last_known_app    = active_app
-        _last_known_window = window_title
+    if active_app:
+        clean_app = active_app.lower()
+        if clean_app.endswith('.app'): clean_app = clean_app[:-4]
+        if clean_app.endswith('.exe'): clean_app = clean_app[:-4]
+        if clean_app in _SELF_APP_NAMES:
+            active_app   = _last_known_app
+            window_title = _last_known_window
+        elif active_app != "[blocked]":
+            _last_known_app    = active_app
+            _last_known_window = window_title
 
     # Blocked app check
     if active_app and settings.is_app_blocked(active_app):

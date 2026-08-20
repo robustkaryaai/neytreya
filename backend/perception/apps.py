@@ -85,10 +85,14 @@ class AppWatcher:
 
         # If the detected app is Neytreya itself, use the last real app the user was on.
         if result:
-            app_name = result.get("name", "").lower().rstrip(".exe").rstrip(".app")
+            app_name = result.get("name", "").lower()
+            if app_name.endswith('.app'): app_name = app_name[:-4]
+            if app_name.endswith('.exe'): app_name = app_name[:-4]
+            
             # Self-filter: Neytreya/Electron panel + Windows shell chrome (taskbar, tray)
             _self_names = {"electron", "neytreya", "explorer", "shellexperiencehost",
                           "searchhost", "startmenuexperiencehost", "textinputhost"}
+            
             if app_name in _self_names and self._last_real_app:
                 result = self._last_real_app
             elif app_name not in _self_names:
