@@ -22,9 +22,9 @@ _QWEN3VL_TIERS = [
 
 # Minimum seconds to wait between vision calls regardless of window changes
 # (protects against rapid window-switching hammering Ollama)
-_MIN_VISION_INTERVAL   = 15.0   # seconds
+_MIN_VISION_INTERVAL   = 300.0   # seconds
 # If a window change is detected, override the interval and call sooner
-_WINDOW_CHANGE_INTERVAL = 3.0   # seconds grace after a switch
+_WINDOW_CHANGE_INTERVAL = 300.0   # seconds grace after a switch
 
 
 def pick_tier_for_ram(available_ram_gb: float) -> str:

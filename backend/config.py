@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 DATA_DIR = Path.home() / ".neytreya"
@@ -38,9 +38,10 @@ class NeytreyadSettings(BaseSettings):
     # Audio Recall (Phase 3)
     audio_recall_enabled: bool = False  # starts audiocap + faster-whisper transcription
 
-    class Config:
-        env_file = ".env"
-        extra    = "ignore"   # don't crash on Electron-only fields (is_logged_in, user_name, etc.)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
     # ------------------------------------------------------------------
     # Persistence

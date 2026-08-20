@@ -169,16 +169,17 @@ async def perception_tick() -> dict:
     # ── 4. Vision (LOW only, if enabled, Ollama available) ───────────
     vision_summary: str | None = None
 
-    # Auto-protection: if system is under HIGH load and vision is on, temporarily skip
-    # and push a warning so the user sees it in the panel.
-    if load_tier == "HIGH" and settings.vision_enabled:
-        logger.warning("[main] HIGH load detected — skipping vision this tick to protect system.")
+    # Auto-protection: if system is under HIGH load or user is gaming, temporarily skip vision
+    is_gaming = active_app and any(g in active_app.lower() for g in ["minecraft", "roblox", "steam", "epic games", "league of legends", "valorant", "csgo", "cs2", "dota", "overwatch", "gta", "cyberpunk"])
+    
+    if (load_tier == "HIGH" or is_gaming) and settings.vision_enabled:
+        reason = "User is gaming" if is_gaming else "System under heavy load"
+        logger.warning(f"[main] {reason} detected — skipping vision this tick to protect performance.")
         # Push a one-time warning observation so it shows in the panel
         _high_load_obs = {
             "type": "observation",
             "data": {
-                "message": "System under heavy load — Vision Engine paused this cycle to protect performance. "
-                           "Consider disabling Vision in Settings if this persists.",
+                "message": f"{reason} — Vision Engine paused this cycle to preserve framerate.",
                 "is_error": False,
                 "app": active_app or "System",
                 "timestamp": __import__("datetime").datetime.utcnow().isoformat() + "Z",
@@ -191,6 +192,7 @@ async def perception_tick() -> dict:
         and load_tier == "LOW"
         and settings.vision_enabled
         and last_image is not None
+        and not is_gaming
     ):
         try:
             hint           = f"{active_app or ''} · {window_title or ''}"
@@ -762,14 +764,21 @@ async def recall_chat(payload: dict):
         sys_prompt = "You are Neytreya, an AI assistant. You have access to the user's timeline. Keep your answers extremely brief, in a nutshell, unless paragraphs are absolutely needed. Do not output markdown, just plain text so it can be spoken aloud naturally."
         full_prompt = f"{sys_prompt}\\n\\n{timeline_str}\\nUser asks: {prompt}"
         
-        # We will use qwen_vl if available, otherwise just echo back a fake response
-        from engines import qwen_vl
-        if qwen_vl.is_available():
-            response = await asyncio.to_thread(
-                qwen_vl.query_vision_sync, 
-                model=settings.vision_model, 
-                prompt=full_prompt
-            )
+        # Check if Ollama / vision is available
+        if await vision.is_available():
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.post(
+                    f"{vision.ollama_url}/api/generate",
+                    json={
+                        "model": settings.vision_model,
+                        "prompt": full_prompt,
+                        "stream": False
+                    }
+                )
+                if resp.status_code == 200:
+                    response = resp.json().get("response", "No response generated.")
+                else:
+                    response = "Failed to fetch response from Ollama."
         else:
             response = "Qwen model is not available to answer this right now."
             
