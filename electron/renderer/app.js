@@ -105,6 +105,7 @@ async function init() {
   if (toggleWatching)    toggleWatching.checked  = settings.watching_enabled !== false;
   if (toggleOcr)         toggleOcr.checked        = settings.ocr_enabled !== false;
   if (toggleVision)      toggleVision.checked     = settings.enable_vision === true;
+  if (document.getElementById('vision-model-input')) document.getElementById('vision-model-input').value = settings.vision_model || 'qwen3-vl:4b';
   if (toggleAudioRecall) toggleAudioRecall.checked = settings.enable_audio_recall === true;
   if (toggleIndexing)    toggleIndexing.checked   = settings.enable_indexing !== false;
   if (settings.blocked_apps) blockedAppsInp.value = settings.blocked_apps;
@@ -455,6 +456,7 @@ btnSaveSettings.addEventListener('click', async () => {
   settings.watching_enabled      = toggleWatching ? toggleWatching.checked : true;
   settings.ocr_enabled           = toggleOcr ? toggleOcr.checked : true;
   settings.enable_vision         = toggleVision ? toggleVision.checked : false;
+  settings.vision_model          = document.getElementById('vision-model-input') ? document.getElementById('vision-model-input').value : 'qwen3-vl:4b';
   settings.enable_audio_recall   = toggleAudioRecall ? toggleAudioRecall.checked : false;
   settings.enable_indexing       = toggleIndexing ? toggleIndexing.checked : true;
   settings.blocked_apps          = blockedAppsInp.value;

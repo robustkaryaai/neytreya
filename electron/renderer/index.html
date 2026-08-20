@@ -178,6 +178,10 @@
             <div class="s-row-title">AI Vision (Ollama)</div>
             <div class="s-row-desc">Qwen3-VL visual understanding. Requires Ollama running.</div>
             <div class="s-row-desc" style="color: #f59e0b; margin-top: 4px;">⚠️ Enabling AI Vision has a high performance impact and requires significant RAM/GPU. It auto-pauses during gaming or heavy load.</div>
+            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 13px; color: rgba(255,255,255,0.7);">Ollama Model:</span>
+              <input type="text" id="vision-model-input" class="s-input" style="width: 160px; padding: 4px 8px;" placeholder="qwen3-vl:4b" />
+            </div>
           </div>
           <label class="toggle"><input type="checkbox" id="toggle-vision"><span class="slider"></span></label>
         </div>
