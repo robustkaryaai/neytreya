@@ -3,39 +3,68 @@
 <head>
   <meta charset="utf-8">
   <title>Gallery</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    body { background: #060e09; color: #fff; margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .header h2 { margin: 0; }
-    .close-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    body { background: #060e09; color: #fff; margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
+    .header h2 { margin: 0; font-size: 20px; }
+    .controls { display: flex; gap: 12px; align-items: center; }
+    .btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: rgba(255,255,255,0.2); }
+    .btn.danger { background: rgba(220,38,38,0.2); border-color: rgba(220,38,38,0.4); color: #fca5a5; }
+    .btn.danger:hover { background: rgba(220,38,38,0.4); color: white; }
     .date-filter { background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 6px; outline: none; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-    .grid-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s; }
-    .grid-item:hover { transform: scale(1.02); border-color: rgba(255,255,255,0.4); }
-    .grid-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
-    .grid-time { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
-    .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(220,38,38,0.8); border: none; color: white; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; display: none; }
-    .grid-item:hover .delete-btn { display: block; }
-    .empty { padding: 40px; text-align: center; color: rgba(255,255,255,0.5); grid-column: 1 / -1; }
+    
+    .viewer { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #000; }
+    .viewer img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    
+    .overlay-info { position: absolute; top: 16px; left: 16px; background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); }
+    .overlay-time { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .overlay-app { font-size: 13px; color: #a1a1aa; margin-top: 4px; }
+    
+    .scrubber-container { flex-shrink: 0; padding: 24px 0 10px 0; display: flex; flex-direction: column; gap: 8px; }
+    .slider { -webkit-appearance: none; width: 100%; background: transparent; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #10b981; cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+    .slider::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .slider:focus { outline: none; }
+    
+    .empty { padding: 40px; text-align: center; color: rgba(255,255,255,0.5); width: 100%; }
   </style>
 </head>
 <body>
   <div class="header" style="-webkit-app-region: drag;">
     <h2>Visual Timeline</h2>
-    <div style="-webkit-app-region: no-drag; display: flex; gap: 12px; align-items: center;">
+    <div class="controls" style="-webkit-app-region: no-drag;">
       <select id="date-picker" class="date-filter">
         <option value="all">All Dates</option>
       </select>
-      <button class="close-btn" onclick="window.close()">Close</button>
+      <button class="btn danger" id="delete-btn" onclick="deleteCurrentSnapshot()">🗑 Delete Frame</button>
+      <button class="btn" onclick="window.close()">Close</button>
     </div>
   </div>
-  <div class="grid" id="grid">
+  
+  <div class="viewer" id="viewer">
     <div class="empty">Loading...</div>
   </div>
+  
+  <div class="scrubber-container" id="scrubber-container" style="display: none;">
+    <input type="range" id="time-slider" class="slider" min="0" max="0" value="0">
+    <div style="display: flex; justify-content: space-between; color: #71717a; font-size: 12px; font-variant-numeric: tabular-nums;">
+      <span id="time-start">00:00</span>
+      <span id="time-end">00:00</span>
+    </div>
+  </div>
+
   <script>
-    const grid = document.getElementById('grid');
+    const viewer = document.getElementById('viewer');
     const datePicker = document.getElementById('date-picker');
+    const timeSlider = document.getElementById('time-slider');
+    const scrubberContainer = document.getElementById('scrubber-container');
+    const timeStart = document.getElementById('time-start');
+    const timeEnd = document.getElementById('time-end');
+    const deleteBtn = document.getElementById('delete-btn');
+    
+    let snapshots = [];
+    let currentIndex = 0;
     
     // Add today option
     const today = new Date().toISOString().split('T')[0];
@@ -43,7 +72,6 @@
     option.value = today;
     option.textContent = 'Today (' + today + ')';
     datePicker.appendChild(option);
-    
     datePicker.value = 'all';
 
     function esc(str) {
@@ -51,40 +79,111 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Extract app name from filename (format: YYYY-MM-DD_HH-MM-SS_App.webp)
+    function getAppFromFilename(filename) {
+      if (!filename) return 'Unknown App';
+      const parts = filename.replace('.webp', '').split('_');
+      if (parts.length >= 3) {
+        return parts.slice(2).join('_');
+      }
+      return 'Unknown App';
+    }
+
+    function renderCurrentFrame() {
+      if (snapshots.length === 0) return;
+      const snap = snapshots[currentIndex];
+      const baseName = snap.filename.split('/').pop();
+      const appName = getAppFromFilename(baseName);
+      
+      // Update image using active-timeline image URL
+      viewer.innerHTML = `
+        <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(baseName)}" />
+        <div class="overlay-info">
+          <div class="overlay-time">${esc(snap.time || '')}</div>
+          <div class="overlay-app">${esc(appName)}</div>
+        </div>
+      `;
+      
+      // Preload next image for smooth scrubbing
+      if (currentIndex < snapshots.length - 1) {
+        const nextSnap = snapshots[currentIndex + 1];
+        const nextBaseName = nextSnap.filename.split('/').pop();
+        const img = new Image();
+        img.src = `http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(nextBaseName)}`;
+      }
+    }
+
+    timeSlider.addEventListener('input', (e) => {
+      currentIndex = parseInt(e.target.value, 10);
+      renderCurrentFrame();
+    });
+
     async function loadGallery(date) {
-      grid.innerHTML = '<div class="empty">Loading...</div>';
+      viewer.innerHTML = '<div class="empty">Loading timeline...</div>';
+      scrubberContainer.style.display = 'none';
+      deleteBtn.style.display = 'none';
+      
       try {
         const res = await fetch('http://127.0.0.1:7432/recall/active-timeline?date=' + encodeURIComponent(date));
         if (!res.ok) throw new Error('Network error');
         const data = await res.json();
         
         if (!data.snapshots || data.snapshots.length === 0) {
-          grid.innerHTML = '<div class="empty">No screenshots recorded for this date.</div>';
+          viewer.innerHTML = '<div class="empty">No screenshots recorded for this date.</div>';
           return;
         }
 
-        grid.innerHTML = data.snapshots.reverse().map(snap => {
-          const baseName = snap.filename.split('/').pop();
-          return `
-            <div class="grid-item">
-              <img src="http://127.0.0.1:7432/recall/snapshot/${encodeURIComponent(baseName)}" onclick="window.neytreya.openSnapshot('${baseName}')" />
-              <div class="grid-time">${esc(snap.time || '')}</div>
-              <button class="delete-btn" onclick="deleteSnapshot(event, '${baseName}')">🗑</button>
-            </div>
-          `;
-        }).join('');
+        // Sort chronologically (oldest to newest for slider)
+        snapshots = data.snapshots.sort((a, b) => a.filename.localeCompare(b.filename));
+        
+        timeSlider.min = 0;
+        timeSlider.max = snapshots.length - 1;
+        timeSlider.value = snapshots.length - 1;
+        currentIndex = snapshots.length - 1;
+        
+        timeStart.textContent = snapshots[0].time;
+        timeEnd.textContent = snapshots[snapshots.length - 1].time;
+        
+        scrubberContainer.style.display = 'flex';
+        deleteBtn.style.display = 'block';
+        
+        renderCurrentFrame();
+        
       } catch (err) {
         console.error(err);
-        grid.innerHTML = '<div class="empty">Error loading screenshots. Is the backend running?</div>';
+        viewer.innerHTML = '<div class="empty">Error loading screenshots. Is the backend running?</div>';
       }
     }
 
-    async function deleteSnapshot(e, baseName) {
-      e.stopPropagation();
-      if (!confirm('Delete this screenshot?')) return;
+    async function deleteCurrentSnapshot() {
+      if (snapshots.length === 0) return;
+      if (!confirm('Delete this exact frame permanently?')) return;
+      
+      const snap = snapshots[currentIndex];
+      const baseName = snap.filename.split('/').pop();
+      
       try {
-        await fetch('http://127.0.0.1:7432/recall/snapshot/' + encodeURIComponent(baseName), { method: 'DELETE' });
-        loadGallery(datePicker.value);
+        const res = await fetch('http://127.0.0.1:7432/recall/snapshot/' + encodeURIComponent(baseName), { method: 'DELETE' });
+        if (res.ok) {
+          // Remove from local array to avoid refetching everything
+          snapshots.splice(currentIndex, 1);
+          if (snapshots.length === 0) {
+            viewer.innerHTML = '<div class="empty">No more screenshots.</div>';
+            scrubberContainer.style.display = 'none';
+            deleteBtn.style.display = 'none';
+            return;
+          }
+          // Adjust index if we deleted the last item
+          if (currentIndex >= snapshots.length) {
+            currentIndex = snapshots.length - 1;
+          }
+          timeSlider.max = snapshots.length - 1;
+          timeSlider.value = currentIndex;
+          timeStart.textContent = snapshots[0].time;
+          timeEnd.textContent = snapshots[snapshots.length - 1].time;
+          
+          renderCurrentFrame();
+        }
       } catch(err) {
         alert('Failed to delete');
       }

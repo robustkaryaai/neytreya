@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 RECALL_DIR = Path.home() / ".neytreya" / "recall"
 WEBP_QUALITY = 25
 THUMB_WIDTH = 900
-KEEP_DAYS = 7
+KEEP_DAYS = 10
 
 try:
     import mss
@@ -44,7 +44,7 @@ class ActiveRecall:
             return None
         try:
             with mss.mss() as sct:
-                monitor = sct.monitors[1]
+                monitor = sct.monitors[0]
                 raw = sct.grab(monitor)
                 img = PILImage.frombytes("RGB", raw.size, raw.bgra, "raw", "BGRX")
 

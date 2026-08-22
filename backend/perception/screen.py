@@ -63,7 +63,7 @@ class ScreenWatcher:
 
         try:
             with mss.mss() as sct:
-                monitor = sct.monitors[1]  # primary monitor
+                monitor = sct.monitors[0]  # primary monitor
                 raw = sct.grab(monitor)
                 img = PILImage.frombytes("RGB", raw.size, raw.bgra, "raw", "BGRX")
 
